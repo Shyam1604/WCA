@@ -3,6 +3,7 @@ from wordcloud import WordCloud
 import pandas as pd
 from collections import Counter
 import emoji
+import re
 
 extract = URLExtract()
 
@@ -70,6 +71,7 @@ def most_common_words(selected_user , df):
 
     words =[]
     for message in temp['message']:
+        message = re.sub(r'[^\w\s]', '', message)
         for word in message.lower().split():
             if word not in stop_words:
                 words.append(word)
