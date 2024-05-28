@@ -11,10 +11,12 @@ def preprocess(data):
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
 
     # Convert to datetime using a try-except block to handle both 12-hour and 24-hour formats
-    try:
-        df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %I:%M %p')
-    except ValueError:
-        df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %H:%M')
+    for i, date in enumerate(df['message_date']):
+        try:
+            df.loc[i, 'message_date'] = pd.to_datetime(date, infer_datetime_format=True)
+        except ValueError:
+            # Handle any other formats as needed
+            pass
 
     df.rename(columns={'message_date': 'date'}, inplace=True)
 
@@ -33,6 +35,10 @@ def preprocess(data):
     df['message'] = messages
     df.drop(columns=['user_message'], inplace=True)
 
+    # Ensure 'date' column is properly converted to datetime format
+    df['date'] = pd.to_datetime(df['date'])
+
+    # Access datetime components after conversion
     df['only_date'] = df['date'].dt.date
     df['year'] = df['date'].dt.year
     df['month_num'] = df['date'].dt.month
