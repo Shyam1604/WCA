@@ -9,8 +9,12 @@ def preprocess(data):
     dates = re.findall(pattern, data)
 
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
-    # convert message_date type
-    df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %I:%M %p')
+
+    # Convert to datetime using a try-except block to handle both 12-hour and 24-hour formats
+    try:
+        df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %I:%M %p')
+    except ValueError:
+        df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %H:%M')
 
     df.rename(columns={'message_date': 'date'}, inplace=True)
 
@@ -37,16 +41,5 @@ def preprocess(data):
     df['day_name'] = df['date'].dt.day_name()
     df['hour'] = df['date'].dt.hour
     df['minute'] = df['date'].dt.minute
-
-    # period = []
-    # for hour in df[['day_name', 'hour']]['hour']:
-    #     if hour == 23:
-    #         period.append(str(hour) + "-" + str('00'))
-    #     elif hour == 0:
-    #         period.append(str('00') + "-" + str(hour + 1))
-    #     else:
-    #         period.append(str(hour) + "-" + str(hour + 1))
-
-    # df['period'] = period
 
     return df
