@@ -1,9 +1,11 @@
+import time
+import seaborn as sns
 import streamlit as st
 import matplotlib.pyplot as plt
 import helper
 import preprocessor
 
-st.sidebar.title("Whatsapp Chat Analyzer")
+st.sidebar.markdown("# WhatsApp Chat Analyzer")
 
 uploaded_file = st.sidebar.file_uploader("Choose a file")
 if uploaded_file is not None:
@@ -20,6 +22,11 @@ if uploaded_file is not None:
     selected_user = st.sidebar.selectbox("show analysis wrt", user_list)
 
     if st.sidebar.button("Show Analysis"):
+
+        # spinner
+        with st.spinner("Welcome To Whatsapp Chat Analyzer , Just Wait"):
+            time.sleep(3)
+
 
         # stats area
         num_messages, words = helper.fetch_stats(selected_user, df)
@@ -54,7 +61,7 @@ if uploaded_file is not None:
             col1, col2 = st.columns(2)
 
             with col1:
-                ax.bar(x.index, x.values, color='#D51616')
+                ax.bar(x.index, x.values, color='#128c7e')
                 plt.xticks(rotation='vertical')
                 st.pyplot(fig)
             with col2:
@@ -74,7 +81,7 @@ if uploaded_file is not None:
         daily_timeline = helper.daily_timeline(selected_user, df)
         st.title("Daily Timeline")
         fig, ax = plt.subplots()
-        ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='#D51616')
+        ax.bar(daily_timeline['only_date'], daily_timeline['message'], color='#075e54')
         plt.xlabel('Day')
         plt.ylabel('Message Counts')
         plt.xticks(rotation='vertical')
@@ -104,6 +111,12 @@ if uploaded_file is not None:
             plt.xticks(rotation='vertical')
             st.pyplot(fig)
 
+        st.title("Weekly Activity Map")
+        user_heatmap = helper.activity_heatmap(selected_user, df)
+        fig, ax = plt.subplots()
+        ax = sns.heatmap(user_heatmap)
+        st.pyplot(fig)
+
         # Wordcloud
         st.title("WordCloud")
         df_wc = helper.create_wordcloud(selected_user, df)
@@ -115,7 +128,7 @@ if uploaded_file is not None:
         st.title("Most common words used in chat")
         most_common_df = helper.most_common_words(selected_user, df)
         fig, ax = plt.subplots()
-        ax.barh(most_common_df[0], most_common_df[1], color='#D51616')
+        ax.barh(most_common_df[0], most_common_df[1], color='#128c7e')
         plt.xticks(rotation='vertical')
         st.pyplot(fig)
 
@@ -132,4 +145,4 @@ if uploaded_file is not None:
             ax.pie(emoji_df[1].head(8), labels=emoji_df[0].head(8), autopct='%0.2f')
             st.pyplot(fig)
 
-st.sidebar.write("Created By : Shyam Kalariya")
+        st.info("Thanks for Analyzing Your Chats.")
